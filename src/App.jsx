@@ -10,7 +10,6 @@ export const App = () => {
   const query = new URLSearchParams(window.location.search).get("email");
   const [email, setEmail] = useState(query);
   const [mode, setMode] = useState("");
-  const [date, setDate] = useState({});
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
 
@@ -27,7 +26,7 @@ export const App = () => {
         const res = await axios.get(url);
         const loginLink = res.data.loginurl;
         window.location.replace(loginLink, "_blank");
-        window.open(link, "_balnk");
+        window.open(link, "_blank");
       }
       setLoading(false);
     } catch (error) {
@@ -93,36 +92,9 @@ export const App = () => {
     );
   }
 
-  if (mode === "notstartedyet") {
-    return (
-      <div>
-        <h1>
-          Meeting not started yet, it will be starting on {date.date},{" "}
-          {date.time}
-        </h1>
-      </div>
-    );
-  }
-
-  if (mode === "expired") {
-    return (
-      <div>
-        <h1>This Meeting has already Expired</h1>
-      </div>
-    );
-  }
-
   return (
     <div>
       <h1>Wisechamps</h1>
     </div>
   );
 };
-
-// 1. if Parent Orientation Slot is empty redirect user to calendly to book a slot.
-// 2. if there exists a Parent Orientation Slot and Joined Parent Orientation is empty then redirect the user to the zoom orientation and mark the Joined Parent Orientation
-// 3. Else if Student Job Quiz Slot is empty then redirect the user to calendly again to book a slot.
-// 4. Else if Student Job Quiz Slot is not empty and Job Quiz Attended Date is empty then redirect the user to the required zoomlink and login that user to the LMS in the background.
-// 5. Else if Job Announcement Slot is empty then redirect the user to join the Announcement session on the coming Tuesday.
-
-// 3 orientation links - 2 job orientations and 1 is job announcement on tuesday
