@@ -27,6 +27,8 @@ export const App = () => {
         const loginLink = res.data.loginurl;
         window.location.replace(loginLink, "_blank");
         window.open(link, "_blank");
+      } else if (mode === "noWorkshopDate") {
+        setMode("noWorkshopDate");
       }
       setLoading(false);
     } catch (error) {
