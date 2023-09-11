@@ -25,8 +25,11 @@ export const App = () => {
         const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
         const res = await axios.get(url);
         const loginLink = res.data.loginurl;
-        window.location.replace(loginLink, "_blank");
-        window.open(link, "_blank");
+        const loginWindow = window.open(loginLink);
+        setTimeout(() => {
+          loginWindow.close();
+          window.location.replace(link, "_blank");
+        }, 5000);
       } else if (mode === "noWorkshopDate") {
         setMode("noWorkshopDate");
       }
