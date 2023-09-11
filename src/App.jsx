@@ -92,6 +92,17 @@ export const App = () => {
     );
   }
 
+  if (mode === "noWorkshopDate") {
+    return (
+      <div>
+        <h1>
+          It appears that you have not attended a workshop. <br />
+          Please attend a workshop to join the quiz
+        </h1>
+      </div>
+    );
+  }
+
   return (
     <div>
       <h1>Wisechamps</h1>
