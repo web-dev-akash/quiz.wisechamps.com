@@ -16,7 +16,7 @@ export const App = () => {
   const getLoginLink = async (email) => {
     try {
       setLoading(true);
-      const url = `http://ec2-65-2-78-220.ap-south-1.compute.amazonaws.com/quiz?email=${email}`;
+      const url = `https://backend.wisechamps.app/quiz?email=${email}`;
       const res = await axios.get(url);
       const link = res.data.link;
       const mode = res.data.mode;
