@@ -25,7 +25,6 @@ body {
   margin: 0;
   display: flex;
   place-items: center;
-  min-width: 320px;
   min-height: 100vh;
 }
 
@@ -36,27 +35,29 @@ h1 {
 
 button {
   border-radius: 8px;
-  border: 1px solid transparent;
+  border: 2px solid transparent;
   padding: 0.6em 1.2em;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
-  background-color: #1a1a1a;
   cursor: pointer;
-  transition: border-color 0.25s;
+  transition: 0.5s ease;
+  background-color: rgba(129, 140, 248);
+  color: white;
 }
-button:hover {
-  border-color: #646cff;
-}
-button:focus,
-button:focus-visible {
-  outline: 4px auto -webkit-focus-ring-color;
+button:hover,
+button:focus {
+  outline: none;
+  color: black;
+  border-color: rgba(129, 140, 248);
+  background-color: #fff;
+  box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
 }
 
 @media (prefers-color-scheme: light) {
   :root {
     color: #213547;
-    background-color: #ffffff;
+    background-color: #dfdfdf;
   }
   a:hover {
     color: #747bff;
@@ -64,4 +65,80 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
+}
+
+.input {
+  width: 15rem;
+  height: 45px;
+  line-height: 30px;
+  padding: 0 5rem;
+  padding-left: 1rem;
+  border: 2px solid rgba(129, 140, 248);
+  border-radius: 10px;
+  outline: none;
+  background-color: #f5faff;
+  color: #0d0c22;
+  transition: 0.5s ease;
+}
+
+.input::placeholder {
+  color: #8698b1;
+}
+
+.input:focus,
+.input:hover {
+  outline: none;
+  border-color: rgba(129, 140, 248);
+  background-color: #fff;
+  box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
+}
+.main {
+  width: max-content;
+  padding: 1rem 2rem 2.7rem 2rem;
+  box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px,
+    rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
+  border-radius: 1rem;
+  text-align: left;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  position: relative;
+}
+.form p {
+  position: absolute;
+  top: 2.5rem;
+  font-size: 12px;
+  color: red;
+}
+@media screen and (max-width: 768px) {
+  #root,
+  html,
+  body {
+    width: 100%;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+  #root {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+  }
+  body {
+    min-height: 90vh !important;
+  }
+  .main {
+    width: 70%;
+    margin: auto;
+  }
+  .input {
+    width: unset;
+    padding-left: 10px;
+  }
+}
+
+button:disabled {
+  cursor: not-allowed;
 }
