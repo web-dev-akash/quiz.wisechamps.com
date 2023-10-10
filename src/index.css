@@ -33,7 +33,7 @@ h1 {
   line-height: 1.1;
 }
 
-button {
+#submit-btn {
   border-radius: 8px;
   border: 2px solid transparent;
   padding: 0.6em 1.2em;
@@ -45,8 +45,8 @@ button {
   background-color: rgba(129, 140, 248);
   color: white;
 }
-button:hover,
-button:focus {
+#submit-btn:hover,
+#submit-btn:focus {
   outline: none;
   color: black;
   border-color: rgba(129, 140, 248);
@@ -137,8 +137,4 @@ button:focus {
     width: unset;
     padding-left: 10px;
   }
-}
-
-button:disabled {
-  cursor: not-allowed;
 }

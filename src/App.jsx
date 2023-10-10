@@ -27,22 +27,29 @@ export const App = () => {
     }
     try {
       setLoading(true);
+      await axios.post(
+        `https://script.google.com/macros/s/AKfycbzfelbwgNpG1v4zY8t-avVggcgH3K_7yE-r7B7eTWF45lt1q_guT4qaQTaEiYccHy-b/exec?email=${emailParam}&type=quiz&description=EnteredEmail`
+      );
       const url = `https://backend.wisechamps.app/quiz`;
       const res = await axios.post(url, { email: emailParam });
-      console.log(res.data);
-      const link = res.data.link;
+      const status = res.data.status;
       const mode = res.data.mode;
+      const link = res.data.link;
       const email = res.data.email;
+      const description = `${mode} ${status}`;
+      await axios.post(
+        `https://script.google.com/macros/s/AKfycbzfelbwgNpG1v4zY8t-avVggcgH3K_7yE-r7B7eTWF45lt1q_guT4qaQTaEiYccHy-b/exec?email=${emailParam}&type=quiz&description=${description}`
+      );
       if (mode === "quizlink") {
         setMode("quizlink");
         const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
         const res = await axios.get(url);
+        await axios.post(
+          `https://script.google.com/macros/s/AKfycbzfelbwgNpG1v4zY8t-avVggcgH3K_7yE-r7B7eTWF45lt1q_guT4qaQTaEiYccHy-b/exec?email=${emailParam}&type=quiz&description=LinkGenerated ${res.status}`
+        );
         const loginLink = res.data.loginurl;
-        const loginWindow = window.open(loginLink, "_blank");
-        setTimeout(() => {
-          loginWindow.close();
-          window.location.replace(link);
-        }, 4000);
+        const finalLink = `${loginLink}&wantsurl=${link}`;
+        window.location.assign(finalLink);
       } else if (mode === "nosession") {
         setMode("nosession");
       } else if (mode === "nouser") {
@@ -59,6 +66,7 @@ export const App = () => {
   if (loading) {
     return (
       <div
+        id="loadingDiv"
         style={{
           width: "fit-content",
         }}
@@ -78,8 +86,13 @@ export const App = () => {
 
   if (mode === "quizlink") {
     return (
-      <div>
-        <h1>Redirecting you to the Quiz Please Wait..</h1>
+      <div
+        id="loadingDiv"
+        style={{
+          width: "fit-content",
+        }}
+      >
+        <DotPulse size={60} speed={1.3} color="black" />
       </div>
     );
   }
@@ -122,11 +135,7 @@ export const App = () => {
           onChange={handleChange}
         />
         <p>* Please use the registered Email.</p>
-        <button
-          id="submit-btn"
-          // disabled={!emailRegex.test(email)}
-          onClick={() => handleClick(email)}
-        >
+        <button id="submit-btn" onClick={() => handleClick(email)}>
           Submit
         </button>
       </div>
