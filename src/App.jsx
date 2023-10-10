@@ -50,10 +50,8 @@ export const App = () => {
         const loginLink = res.data.loginurl;
         const finalLink = `${loginLink}&wantsurl=${link}`;
         window.location.assign(finalLink);
-      } else if (mode === "nosession") {
-        setMode("nosession");
-      } else if (mode === "nouser") {
-        setMode("nouser");
+      } else {
+        setMode(mode);
       }
       setLoading(false);
     } catch (error) {
@@ -76,7 +74,7 @@ export const App = () => {
     );
   }
 
-  if (error) {
+  if (error || mode.includes("internalservererror")) {
     return (
       <div>
         <h1>Something Went Wrong. Please Refresh</h1>
