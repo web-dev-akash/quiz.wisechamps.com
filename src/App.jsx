@@ -134,7 +134,7 @@ export const App = () => {
         />
         <p>* Please use the registered Email.</p>
         <button id="submit-btn" onClick={() => handleClick(email)}>
-          Submit
+          Join Quiz
         </button>
       </div>
     </div>
