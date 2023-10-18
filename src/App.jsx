@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { DotPulse } from "@uiball/loaders";
+import { RaceBy } from "@uiball/loaders";
 import axios from "axios";
 import "./App.css";
 
@@ -27,26 +27,15 @@ export const App = () => {
     }
     try {
       setLoading(true);
-      await axios.post(
-        `https://script.google.com/macros/s/AKfycbzfelbwgNpG1v4zY8t-avVggcgH3K_7yE-r7B7eTWF45lt1q_guT4qaQTaEiYccHy-b/exec?email=${emailParam}&type=quiz&description=EnteredEmail`
-      );
       const url = `https://backend.wisechamps.app/quiz`;
       const res = await axios.post(url, { email: emailParam });
-      const status = res.data.status;
       const mode = res.data.mode;
       const link = res.data.link;
       const email = res.data.email;
-      const description = `${mode} ${status}`;
-      await axios.post(
-        `https://script.google.com/macros/s/AKfycbzfelbwgNpG1v4zY8t-avVggcgH3K_7yE-r7B7eTWF45lt1q_guT4qaQTaEiYccHy-b/exec?email=${emailParam}&type=quiz&description=${description}`
-      );
       if (mode === "quizlink") {
         setMode("quizlink");
         const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
         const res = await axios.get(url);
-        await axios.post(
-          `https://script.google.com/macros/s/AKfycbzfelbwgNpG1v4zY8t-avVggcgH3K_7yE-r7B7eTWF45lt1q_guT4qaQTaEiYccHy-b/exec?email=${emailParam}&type=quiz&description=LinkGenerated ${res.status}`
-        );
         const loginLink = res.data.loginurl;
         const finalLink = `${loginLink}&wantsurl=${link}`;
         window.location.assign(finalLink);
@@ -69,7 +58,13 @@ export const App = () => {
           width: "fit-content",
         }}
       >
-        <DotPulse size={60} speed={1.3} color="black" />
+        <p>Searching for you session..</p>
+        <RaceBy
+          size={300}
+          lineWeight={20}
+          speed={1.4}
+          color="rgba(129, 140, 248)"
+        />
       </div>
     );
   }
@@ -90,7 +85,13 @@ export const App = () => {
           width: "fit-content",
         }}
       >
-        <DotPulse size={60} speed={1.3} color="black" />
+        <p>Redirecting You to Quiz..</p>
+        <RaceBy
+          size={300}
+          lineWeight={20}
+          speed={1.4}
+          color="rgba(129, 140, 248)"
+        />
       </div>
     );
   }
@@ -108,15 +109,26 @@ export const App = () => {
   }
 
   if (mode === "nouser") {
-    setTimeout(() => {
-      setMode("");
-    }, 4000);
     return (
-      <div>
+      <div className="email-not-found">
         <p>
           This Email is not registered with us. <br />
           Please use a registered Email Address
         </p>
+        <div>
+          <button id="submit-btn" onClick={() => setMode("")}>
+            Try Again
+          </button>
+          <button
+            id="submit-btn"
+            onClick={() => {
+              window.open(`https://wa.me/919717094422`, "_blank");
+              setMode("");
+            }}
+          >
+            Get Your Registered Email
+          </button>
+        </div>
       </div>
     );
   }

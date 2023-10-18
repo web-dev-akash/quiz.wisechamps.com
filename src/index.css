@@ -138,3 +138,16 @@ h1 {
     padding-left: 10px;
   }
 }
+
+.email-not-found > div {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-direction: column;
+  gap: 15px;
+}
+.email-not-found > div > button {
+  padding: 10px 15px !important;
+  font-size: 15px !important;
+  width: 100%;
+}
