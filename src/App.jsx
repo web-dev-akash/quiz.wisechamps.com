@@ -130,7 +130,12 @@ export const App = () => {
           <button
             id="submit-btn"
             onClick={() => {
-              window.open(`https://wa.me/919717094422`, "_blank");
+              window.open(
+                `https://wa.me/919717094422?text=${encodeURIComponent(
+                  "Please send me my registered email"
+                )}`,
+                "_blank"
+              );
               setMode("");
             }}
           >
