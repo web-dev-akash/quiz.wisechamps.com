@@ -2,11 +2,13 @@ import { useState } from "react";
 import { RaceBy } from "@uiball/loaders";
 import axios from "axios";
 import "./App.css";
+import { useEffect } from "react";
 
 export const App = () => {
   const wstoken = process.env.REACT_APP_WS_TOKEN;
   const wsfunction = process.env.REACT_APP_WS_FUNCTION;
-  const [email, setEmail] = useState("");
+  const query = new URLSearchParams(window.location.search);
+  const [email, setEmail] = useState(query.get("email"));
   const [mode, setMode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
@@ -49,6 +51,12 @@ export const App = () => {
       console.log("error is ------------", error);
     }
   };
+
+  useEffect(() => {
+    if (email) {
+      handleClick(email);
+    }
+  }, []);
 
   if (loading) {
     return (
