@@ -11,7 +11,9 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 }
-
+html {
+  background-color: #fff !important;
+}
 a {
   font-weight: 500;
   color: #646cff;
@@ -36,7 +38,7 @@ h1 {
 #submit-btn {
   border-radius: 8px;
   border: 2px solid transparent;
-  padding: 0.6em 1.2em;
+  padding: 0.5em 1rem;
   font-size: 1em;
   font-weight: 500;
   font-family: inherit;
@@ -68,10 +70,10 @@ h1 {
 }
 
 .input {
-  width: 15rem;
+  width: 100%;
+  box-sizing: border-box;
   height: 45px;
   line-height: 30px;
-  padding: 0 5rem;
   padding-left: 1rem;
   border: 2px solid rgba(129, 140, 248);
   border-radius: 10px;
@@ -93,8 +95,8 @@ h1 {
   box-shadow: 0 0 0 5px rgb(129 140 248 / 30%);
 }
 .main {
-  width: max-content;
-  padding: 1rem 2rem 2.7rem 2rem;
+  width: 350px;
+  padding: 1rem 2rem 2.5rem 2rem;
   box-shadow: rgba(17, 17, 26, 0.1) 0px 4px 16px,
     rgba(17, 17, 26, 0.1) 0px 8px 24px, rgba(17, 17, 26, 0.1) 0px 16px 56px;
   border-radius: 1rem;

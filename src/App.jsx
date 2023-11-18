@@ -12,6 +12,9 @@ export const App = () => {
   const [mode, setMode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [credits, setCredits] = useState(0);
+  const [username, setUsername] = useState("");
+
   const emailRegex = new RegExp(
     /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
     "gm"
@@ -28,14 +31,17 @@ export const App = () => {
       return;
     }
     try {
+      setMode("");
       setLoading(true);
       const url = `https://backend.wisechamps.app/quiz`;
       const res = await axios.post(url, { email: emailParam });
       const mode = res.data.mode;
       const link = res.data.link;
       const email = res.data.email;
+      const credits = res.data.credits;
+      setCredits(credits);
       if (mode === "quizlink") {
-        setMode("quizlink");
+        setMode(mode);
         const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
         const res = await axios.get(url);
         const loginLink = res.data.loginurl;
@@ -44,6 +50,32 @@ export const App = () => {
       } else {
         setMode(mode);
       }
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setError(true);
+      console.log("error is ------------", error);
+    }
+  };
+
+  const handleCredits = async (emailParam) => {
+    if (!emailRegex.test(emailParam)) {
+      alert("Please Enter a Valid Email");
+      window.location.reload();
+      return;
+    }
+    try {
+      setMode("showCredits");
+      setLoading(true);
+      const url = `https://backend.wisechamps.app/quiz`;
+      const res = await axios.post(url, { email: emailParam });
+      console.log(res.data);
+      const credits = res.data.credits;
+      const name = res.data.name;
+      setCredits(credits);
+      setUsername(name);
+      console.log(credits);
+      console.log(name);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -66,7 +98,11 @@ export const App = () => {
           width: "fit-content",
         }}
       >
-        <p>Searching for you session..</p>
+        <p>
+          {mode === "showCredits"
+            ? "Getting your credit balance"
+            : "Searching for you session.."}
+        </p>
         <RaceBy
           size={300}
           lineWeight={20}
@@ -100,6 +136,24 @@ export const App = () => {
           speed={1.4}
           color="rgba(129, 140, 248)"
         />
+      </div>
+    );
+  }
+
+  if (mode === "showCredits") {
+    return (
+      <div
+        id="loadingDiv"
+        style={{
+          width: "fit-content",
+        }}
+      >
+        <p>
+          Hi {username}, Your have currently <b>{credits} credits</b>.
+        </p>
+        <button id="submit-btn" onClick={() => handleClick(email)}>
+          Join Quiz Now
+        </button>
       </div>
     );
   }
@@ -158,9 +212,20 @@ export const App = () => {
           onChange={handleChange}
         />
         <p>* Please use the registered Email.</p>
-        <button id="submit-btn" onClick={() => handleClick(email)}>
-          Join Quiz
-        </button>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "20px",
+          }}
+        >
+          <button id="submit-btn" onClick={() => handleClick(email)}>
+            Join Quiz
+          </button>
+          <button id="submit-btn" onClick={() => handleCredits(email)}>
+            Get Your Credit Balance
+          </button>
+        </div>
       </div>
     </div>
   );
