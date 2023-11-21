@@ -151,9 +151,29 @@ export const App = () => {
         <p>
           Hi {username}, Your have currently <b>{credits} credits</b>.
         </p>
-        <button id="submit-btn" onClick={() => handleClick(email)}>
-          Join Quiz Now
-        </button>
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: "15px",
+          }}
+        >
+          {credits < 10 ? (
+            <button
+              id="submit-btn"
+              onClick={() =>
+                window.location.assign(
+                  `https://payment.wisechamps.com?email=${email}`
+                )
+              }
+            >
+              Buy Credits Now
+            </button>
+          ) : null}
+          <button id="submit-btn" onClick={() => handleClick(email)}>
+            Join Quiz Now
+          </button>
+        </div>
       </div>
     );
   }
@@ -216,7 +236,7 @@ export const App = () => {
           style={{
             display: "flex",
             flexDirection: "column",
-            gap: "20px",
+            gap: "15px",
           }}
         >
           <button id="submit-btn" onClick={() => handleClick(email)}>
