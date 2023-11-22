@@ -33,7 +33,7 @@ export const App = () => {
     try {
       setMode("");
       setLoading(true);
-      const url = `https://backend.wisechamps.app/quiz`;
+      const url = `https://backend.wisechamps.com/quiz`;
       const res = await axios.post(url, { email: emailParam });
       const mode = res.data.mode;
       const link = res.data.link;
@@ -67,7 +67,7 @@ export const App = () => {
     try {
       setMode("showCredits");
       setLoading(true);
-      const url = `https://backend.wisechamps.app/quiz`;
+      const url = `https://backend.wisechamps.com/quiz`;
       const res = await axios.post(url, { email: emailParam });
       console.log(res.data);
       const credits = res.data.credits;
