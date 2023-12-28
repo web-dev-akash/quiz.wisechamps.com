@@ -14,7 +14,8 @@ export const App = () => {
   const [error, setError] = useState(false);
   const [credits, setCredits] = useState(0);
   const [username, setUsername] = useState("");
-
+  const [grade, setGrade] = useState("");
+  const [link, setLink] = useState("");
   const emailRegex = new RegExp(
     /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
     "gm"
@@ -22,6 +23,25 @@ export const App = () => {
   const handleChange = (e) => {
     e.preventDefault();
     setEmail(e.target.value);
+  };
+
+  const redirectToQuiz = async (emailParam, team) => {
+    try {
+      setLoading(true);
+      setMode("quizlink");
+      const url = `https://backend.wisechamps.com/quiz/team`;
+      const res = await axios.post(url, { email: emailParam, team: team });
+      const url1 = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
+      const res1 = await axios.get(url1);
+      const loginLink = res1.data.loginurl;
+      const finalLink = `${loginLink}&wantsurl=${link}`;
+      window.location.assign(finalLink);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setError(true);
+      console.log("error is ------------", error);
+    }
   };
 
   const handleClick = async (emailParam) => {
@@ -37,16 +57,23 @@ export const App = () => {
       const res = await axios.post(url, { email: emailParam });
       const mode = res.data.mode;
       const link = res.data.link;
-      const email = res.data.email;
       const credits = res.data.credits;
-      setCredits(credits);
+      const grade = res.data.grade;
+      const team = res.data.team;
       if (mode === "quizlink") {
         setMode(mode);
-        const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
-        const res = await axios.get(url);
-        const loginLink = res.data.loginurl;
-        const finalLink = `${loginLink}&wantsurl=${link}`;
-        window.location.assign(finalLink);
+        setGrade(grade);
+        setCredits(credits);
+        setLink(link);
+        if (team) {
+          const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
+          const res = await axios.get(url);
+          const loginLink = res.data.loginurl;
+          const finalLink = `${loginLink}&wantsurl=${link}`;
+          window.location.assign(finalLink);
+        } else {
+          setMode("team");
+        }
       } else {
         setMode(mode);
       }
@@ -101,6 +128,8 @@ export const App = () => {
         <p>
           {mode === "showCredits"
             ? "Getting your credit balance"
+            : mode === "team"
+            ? "Redirecting You to Quiz.."
             : "Searching for you session.."}
         </p>
         <RaceBy
@@ -136,6 +165,33 @@ export const App = () => {
           speed={1.4}
           color="rgba(129, 140, 248)"
         />
+      </div>
+    );
+  }
+
+  if (mode === "team") {
+    return (
+      <div>
+        <p>Please select your Team</p>
+        <div
+          style={{
+            width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            gap: "10px",
+          }}
+        >
+          <button id="submit-btn" onClick={() => redirectToQuiz(email, "Boys")}>
+            Boys
+          </button>
+          <button
+            id="submit-btn"
+            onClick={() => redirectToQuiz(email, "Girls")}
+          >
+            Girls
+          </button>
+        </div>
       </div>
     );
   }
