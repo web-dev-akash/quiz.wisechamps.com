@@ -3,19 +3,22 @@ import { RaceBy } from "@uiball/loaders";
 import axios from "axios";
 import "./App.css";
 import { useEffect } from "react";
-
+import { Address } from "./components/Address";
+import "animate.css";
+import { Header } from "./components/Header";
 export const App = () => {
   const wstoken = process.env.REACT_APP_WS_TOKEN;
   const wsfunction = process.env.REACT_APP_WS_FUNCTION;
   const query = new URLSearchParams(window.location.search);
   const [email, setEmail] = useState(query.get("email"));
-  const [mode, setMode] = useState("");
+  const [mode, setMode] = useState("address");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [credits, setCredits] = useState(0);
   const [username, setUsername] = useState("");
   const [grade, setGrade] = useState("");
   const [link, setLink] = useState("");
+  const [address, setAddress] = useState("");
   const emailRegex = new RegExp(
     /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
     "gm"
@@ -25,17 +28,21 @@ export const App = () => {
     setEmail(e.target.value);
   };
 
-  const redirectToQuiz = async (emailParam, team) => {
+  const redirectToQuiz = async (emailParam, team, address) => {
     try {
       setLoading(true);
       setMode("quizlink");
       const url = `https://backend.wisechamps.com/quiz/team`;
       const res = await axios.post(url, { email: emailParam, team: team });
-      const url1 = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
-      const res1 = await axios.get(url1);
-      const loginLink = res1.data.loginurl;
-      const finalLink = `${loginLink}&wantsurl=${link}`;
-      window.location.assign(finalLink);
+      if (address) {
+        const url1 = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
+        const res1 = await axios.get(url1);
+        const loginLink = res1.data.loginurl;
+        const finalLink = `${loginLink}&wantsurl=${link}`;
+        window.location.assign(finalLink);
+      } else {
+        setMode("address");
+      }
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -60,17 +67,21 @@ export const App = () => {
       const credits = res.data.credits;
       const grade = res.data.grade;
       const team = res.data.team;
+      const address = res.data.address;
       if (mode === "quizlink") {
         setMode(mode);
         setGrade(grade);
         setCredits(credits);
         setLink(link);
-        if (team) {
+        setAddress(address);
+        if (team && address) {
           const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
           const res = await axios.get(url);
           const loginLink = res.data.loginurl;
           const finalLink = `${loginLink}&wantsurl=${link}`;
           window.location.assign(finalLink);
+        } else if (team) {
+          setMode("address");
         } else {
           setMode("team");
         }
@@ -150,6 +161,20 @@ export const App = () => {
     );
   }
 
+  if (mode === "address") {
+    return (
+      <Address
+        email={email}
+        link={link}
+        setError={setError}
+        setLoading={setLoading}
+        setMode={setMode}
+        wstoken={wstoken}
+        wsfunction={wsfunction}
+      />
+    );
+  }
+
   if (mode === "quizlink") {
     return (
       <div
@@ -171,138 +196,157 @@ export const App = () => {
 
   if (mode === "team") {
     return (
-      <div>
-        <p>Please select your Team</p>
-        <div
-          style={{
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            gap: "10px",
-          }}
-        >
-          <button id="submit-btn" onClick={() => redirectToQuiz(email, "Boys")}>
-            Boys
-          </button>
-          <button
-            id="submit-btn"
-            onClick={() => redirectToQuiz(email, "Girls")}
+      <>
+        <Header />
+        <div className="animate__animated animate__fadeInRight">
+          <p>Please select your Team</p>
+          <div
+            style={{
+              width: "100%",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              gap: "10px",
+            }}
           >
-            Girls
-          </button>
+            <button
+              id="submit-btn"
+              onClick={() => redirectToQuiz(email, "Boys", address)}
+            >
+              Boys
+            </button>
+            <button
+              id="submit-btn"
+              onClick={() => redirectToQuiz(email, "Girls", address)}
+            >
+              Girls
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (mode === "showCredits") {
     return (
-      <div
-        id="loadingDiv"
-        style={{
-          width: "fit-content",
-        }}
-      >
-        <p>
-          Hi {username}, Your have currently <b>{credits} credits</b>.
-        </p>
+      <>
+        <Header />
         <div
+          id="loadingDiv"
           style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "15px",
+            width: "fit-content",
           }}
+          className="animate__animated animate__fadeInRight"
         >
-          {credits < 10 ? (
-            <button
-              id="submit-btn"
-              onClick={() =>
-                window.location.assign(
-                  `https://payment.wisechamps.com?email=${email}`
-                )
-              }
-            >
-              Buy Credits Now
+          <p>
+            Hi {username}, Your have currently <b>{credits} credits</b>.
+          </p>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "15px",
+            }}
+          >
+            {credits < 10 ? (
+              <button
+                id="submit-btn"
+                onClick={() =>
+                  window.location.assign(
+                    `https://payment.wisechamps.com?email=${email}`
+                  )
+                }
+              >
+                Buy Credits Now
+              </button>
+            ) : null}
+            <button id="submit-btn" onClick={() => handleClick(email)}>
+              Join Quiz Now
             </button>
-          ) : null}
-          <button id="submit-btn" onClick={() => handleClick(email)}>
-            Join Quiz Now
-          </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   if (mode === "nosession") {
     return (
-      <div>
-        <p>
-          It appears that there is no active
-          <br />
-          session at this moment.
-        </p>
-      </div>
+      <>
+        <Header />
+        <div className="animate__animated animate__fadeInRight">
+          <p>
+            It appears that there is no active
+            <br />
+            session at this moment.
+          </p>
+        </div>
+      </>
     );
   }
 
   if (mode === "nouser") {
     return (
-      <div className="email-not-found">
-        <p>
-          This Email is not registered with us. <br />
-          Please use a registered Email Address
-        </p>
-        <div>
-          <button id="submit-btn" onClick={() => setMode("")}>
-            Try Again
-          </button>
-          <button
-            id="submit-btn"
-            onClick={() => {
-              window.open(
-                `https://wa.me/919717094422?text=${encodeURIComponent(
-                  "Please send me my registered email"
-                )}`,
-                "_blank"
-              );
-              setMode("");
-            }}
-          >
-            Get Your Registered Email
-          </button>
+      <>
+        <Header />
+        <div className="email-not-found">
+          <p>
+            This Email is not registered with us. <br />
+            Please use a registered Email Address
+          </p>
+          <div>
+            <button id="submit-btn" onClick={() => setMode("")}>
+              Try Again
+            </button>
+            <button
+              id="submit-btn"
+              onClick={() => {
+                window.open(
+                  `https://wa.me/919717094422?text=${encodeURIComponent(
+                    "Please send me my registered email"
+                  )}`,
+                  "_blank"
+                );
+                setMode("");
+              }}
+            >
+              Get Your Registered Email
+            </button>
+          </div>
         </div>
-      </div>
+      </>
     );
   }
 
   return (
-    <div className="main">
-      <h3>Email</h3>
-      <div className="form">
-        <input
-          className="input"
-          type="email"
-          placeholder="Enter Email"
-          inputMode="email"
-          onChange={handleChange}
-        />
-        <p>* Please use the registered Email.</p>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            gap: "15px",
-          }}
-        >
-          <button id="submit-btn" onClick={() => handleClick(email)}>
-            Join Quiz
-          </button>
-          <button id="submit-btn" onClick={() => handleCredits(email)}>
-            Get Your Credit Balance
-          </button>
+    <>
+      <Header />
+      <div className="main animate__animated animate__fadeInRight">
+        <h3>Email</h3>
+        <div className="form">
+          <input
+            className="input"
+            type="email"
+            placeholder="Enter Email"
+            inputMode="email"
+            onChange={handleChange}
+          />
+          <p>* Please use the registered Email.</p>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "15px",
+            }}
+          >
+            <button id="submit-btn" onClick={() => handleClick(email)}>
+              Join Quiz
+            </button>
+            <button id="submit-btn" onClick={() => handleCredits(email)}>
+              Get Your Credit Balance
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
