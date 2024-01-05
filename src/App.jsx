@@ -11,7 +11,7 @@ export const App = () => {
   const wsfunction = process.env.REACT_APP_WS_FUNCTION;
   const query = new URLSearchParams(window.location.search);
   const [email, setEmail] = useState(query.get("email"));
-  const [mode, setMode] = useState("address");
+  const [mode, setMode] = useState("");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
   const [credits, setCredits] = useState(0);

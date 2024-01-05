@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from "react";
 import {
+  Button,
   ChakraProvider,
+  Flex,
   FormControl,
   FormLabel,
   Input,
@@ -60,6 +62,10 @@ export const Address = ({ email, link }) => {
     wstoken
   ) => {
     try {
+      if (pincode.length !== 6) {
+        alert("Please Enter a valid Pincode");
+        return;
+      }
       setLoading(true);
       setMode("loading");
       const address = `${addressData.flat}, ${addressData.street}, ${
@@ -75,6 +81,23 @@ export const Address = ({ email, link }) => {
       const url1 = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
       const res1 = await axios.get(url1);
       console.log("mode", mode);
+      const loginLink = res1.data.loginurl;
+      const finalLink = `${loginLink}&wantsurl=${link}`;
+      window.location.assign(finalLink);
+      setLoading(false);
+    } catch (error) {
+      setLoading(false);
+      setError(true);
+      console.log(error);
+    }
+  };
+
+  const handleSkipAddress = async (wsfunction, wstoken, email, link) => {
+    try {
+      setLoading(true);
+      setMode("loading");
+      const url1 = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
+      const res1 = await axios.get(url1);
       const loginLink = res1.data.loginurl;
       const finalLink = `${loginLink}&wantsurl=${link}`;
       window.location.assign(finalLink);
@@ -127,16 +150,21 @@ export const Address = ({ email, link }) => {
         width={["95%", "95%", "600px", "600px"]}
       >
         <Text
-          width={"max-content"}
           textAlign={"left"}
           fontWeight={"700"}
           fontSize={["25px", "25px", "30px", "30px"]}
           color={"#6666ff"}
           margin={"10px 0 30px 0"}
         >
-          {/* Provide your address so that we can deliver your gifts at your doorstep */}
-          Delivery Address for <br />
-          <Text width={"max-content"}>Your Gifts</Text>
+          During the quizzes we announce winners regularly who are awarded gifts{" "}
+          <br />
+          <Spacer height={5} />
+          <Text fontSize={"15px"} color={"#000"}>
+            To receive gifts from Wisechamps please fill in your complete
+            courier address.
+          </Text>
+          {/* Delivery Address for <br />
+          <Text width={"max-content"}>Your Gifts</Text> */}
         </Text>
         <FormLabel fontSize={["13px", "13px", "15px", "15px"]} mt={5} mb={1}>
           Pincode
@@ -202,39 +230,73 @@ export const Address = ({ email, link }) => {
           onChange={handleAddressFormChange}
         />
         <Spacer height={8} />
-        <Input
-          background={"rgba(129, 140, 248)"}
-          color={"white"}
-          border={"2px solid transparent"}
-          type="submit"
-          placeholder="Submit"
-          cursor={"pointer"}
-          onClick={() =>
-            handleAddressSubmit(
-              email,
-              address,
-              pincode,
-              link,
-              wsfunction,
-              wstoken
-            )
-          }
-          transition={"0.5s ease"}
-          _hover={{
-            outline: "none",
-            background: "white",
-            color: "black",
-            border: "2px solid rgba(129, 140, 248)",
-            boxShadow: "0 0 0 5px rgb(129 140 248 / 30%)",
-          }}
-          _focus={{
-            outline: "none",
-            background: "white",
-            color: "black",
-            border: "2px solid rgba(129, 140, 248)",
-            boxShadow: "0 0 0 5px rgb(129 140 248 / 30%)",
-          }}
-        />
+        <Flex
+          flexDir={["row", "row", "column", "column"]}
+          gap={2}
+          flexBasis={1}
+        >
+          <Button
+            fontSize={["13px", "13px", "15px", "15px"]}
+            width={["50%", "50%", "100%", "100%"]}
+            background={"rgba(129, 140, 248)"}
+            color={"white"}
+            border={"2px solid transparent"}
+            cursor={"pointer"}
+            onClick={() =>
+              handleAddressSubmit(
+                email,
+                address,
+                pincode,
+                link,
+                wsfunction,
+                wstoken
+              )
+            }
+            transition={"0.5s ease"}
+            _hover={{
+              outline: "none",
+              background: "white",
+              color: "black",
+              border: "2px solid rgba(129, 140, 248)",
+              boxShadow: "0 0 0 5px rgb(129 140 248 / 30%)",
+            }}
+            _focus={{
+              outline: "none",
+              background: "white",
+              color: "black",
+              border: "2px solid rgba(129, 140, 248)",
+              boxShadow: "0 0 0 5px rgb(129 140 248 / 30%)",
+            }}
+          >
+            Submit
+          </Button>
+          <Button
+            fontSize={["13px", "13px", "15px", "15px"]}
+            width={["50%", "50%", "100%", "100%"]}
+            background={"rgba(129, 140, 248)"}
+            color={"white"}
+            border={"2px solid transparent"}
+            cursor={"pointer"}
+            onClick={() => handleSkipAddress(wsfunction, wstoken, email, link)}
+            transition={"0.5s ease"}
+            _hover={{
+              outline: "none",
+              background: "white",
+              color: "black",
+              border: "2px solid rgba(129, 140, 248)",
+              boxShadow: "0 0 0 5px rgb(129 140 248 / 30%)",
+            }}
+            _focus={{
+              outline: "none",
+              background: "white",
+              color: "black",
+              border: "2px solid rgba(129, 140, 248)",
+              boxShadow: "0 0 0 5px rgb(129 140 248 / 30%)",
+            }}
+          >
+            Ask me Later
+          </Button>
+        </Flex>
       </FormControl>
     </ChakraProvider>
   );
