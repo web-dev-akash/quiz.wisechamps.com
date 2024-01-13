@@ -194,6 +194,42 @@ export const App = () => {
     );
   }
 
+  if (mode === "nocredits") {
+    return (
+      <>
+        <Header />
+        <div
+          id="loadingDiv"
+          style={{
+            width: "fit-content",
+          }}
+          className="animate__animated animate__fadeInRight"
+        >
+          <p>You have already used your Quiz Balance</p>
+          <p>Please buy quiz balance and try again.</p>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              gap: "15px",
+            }}
+          >
+            <button
+              id="submit-btn"
+              onClick={() =>
+                window.location.assign(
+                  `https://payment.wisechamps.com?email=${email}`
+                )
+              }
+            >
+              Buy Quiz Balance
+            </button>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   if (mode === "team") {
     return (
       <>
