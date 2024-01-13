@@ -206,7 +206,7 @@ export const App = () => {
           className="animate__animated animate__fadeInRight"
         >
           <p>You have already used your Quiz Balance</p>
-          <p>Please buy quiz balance and try again.</p>
+          <p>Please buy more and try again.</p>
           <div
             style={{
               display: "flex",
@@ -275,7 +275,7 @@ export const App = () => {
           className="animate__animated animate__fadeInRight"
         >
           <p>
-            Hi {username}, Your have currently <b>{credits} credits</b>.
+            Hi {username}, Your have currently <b>{credits} Quiz Balance</b>.
           </p>
           <div
             style={{
@@ -293,7 +293,7 @@ export const App = () => {
                   )
                 }
               >
-                Buy Credits Now
+                Buy Quiz Balance
               </button>
             ) : null}
             <button id="submit-btn" onClick={() => handleClick(email)}>
@@ -378,7 +378,7 @@ export const App = () => {
               Join Quiz
             </button>
             <button id="submit-btn" onClick={() => handleCredits(email)}>
-              Get Your Credit Balance
+              Get Your Quiz Balance
             </button>
           </div>
         </div>
