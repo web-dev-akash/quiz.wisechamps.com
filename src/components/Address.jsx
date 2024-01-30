@@ -40,6 +40,7 @@ export const Address = ({ email, link }) => {
       setPincode(value);
       axios.get(url).then((res) => {
         if (res.data.total !== 0) {
+          setInvalidPincode(false);
           const state = res.data.records[0]._statename;
           const city = res.data.records[0].districtname;
           setAddess({ ...address, city: city, state: state });
@@ -47,8 +48,8 @@ export const Address = ({ email, link }) => {
           setInvalidPincode(true);
         }
       });
-    } else {
-      setInvalidPincode(false);
+    } else if (name === "pincode" && value.length < 6) {
+      setInvalidPincode(true);
     }
     setAddess({ ...address, [name]: value });
   };
@@ -64,6 +65,15 @@ export const Address = ({ email, link }) => {
     try {
       if (pincode.length !== 6) {
         alert("Please Enter a valid Pincode");
+        return;
+      }
+      if (
+        !addressData.flat ||
+        !addressData.street ||
+        !addressData.city ||
+        !addressData.state
+      ) {
+        alert("Please Fill all the required details");
         return;
       }
       setLoading(true);
