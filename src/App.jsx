@@ -3,7 +3,6 @@ import { RaceBy } from "@uiball/loaders";
 import axios from "axios";
 import "./App.css";
 import { useEffect } from "react";
-import { Address } from "./components/Address";
 import "animate.css";
 import { Header } from "./components/Header";
 export const App = () => {
@@ -28,29 +27,6 @@ export const App = () => {
     setEmail(e.target.value);
   };
 
-  const redirectToQuiz = async (emailParam, team, address) => {
-    try {
-      setLoading(true);
-      setMode("quizlink");
-      const url = `https://backend.wisechamps.com/quiz/team`;
-      const res = await axios.post(url, { email: emailParam, team: team });
-      if (address) {
-        const url1 = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
-        const res1 = await axios.get(url1);
-        const loginLink = res1.data.loginurl;
-        const finalLink = `${loginLink}&wantsurl=${link}`;
-        window.location.assign(finalLink);
-      } else {
-        setMode("address");
-      }
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setError(true);
-      console.log("error is ------------", error);
-    }
-  };
-
   const handleClick = async (emailParam) => {
     if (!emailRegex.test(emailParam)) {
       alert("Please Enter a Valid Email");
@@ -66,7 +42,6 @@ export const App = () => {
       const link = res.data.link;
       const credits = res.data.credits;
       const grade = res.data.grade;
-      const team = res.data.team;
       const address = res.data.address;
       if (mode === "quizlink") {
         setMode(mode);
@@ -74,46 +49,14 @@ export const App = () => {
         setCredits(credits);
         setLink(link);
         setAddress(address);
-        if (team && address) {
-          const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
-          const res = await axios.get(url);
-          const loginLink = res.data.loginurl;
-          const finalLink = `${loginLink}&wantsurl=${link}`;
-          window.location.assign(finalLink);
-        } else if (team) {
-          setMode("address");
-        } else {
-          setMode("team");
-        }
+        const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
+        const res = await axios.get(url);
+        const loginLink = res.data.loginurl;
+        const finalLink = `${loginLink}&wantsurl=${link}`;
+        window.location.assign(finalLink);
       } else {
         setMode(mode);
       }
-      setLoading(false);
-    } catch (error) {
-      setLoading(false);
-      setError(true);
-      console.log("error is ------------", error);
-    }
-  };
-
-  const handleCredits = async (emailParam) => {
-    if (!emailRegex.test(emailParam)) {
-      alert("Please Enter a Valid Email");
-      window.location.reload();
-      return;
-    }
-    try {
-      setMode("showCredits");
-      setLoading(true);
-      const url = `https://backend.wisechamps.com/quiz`;
-      const res = await axios.post(url, { email: emailParam });
-      console.log(res.data);
-      const credits = res.data.credits;
-      const name = res.data.name;
-      setCredits(credits);
-      setUsername(name);
-      console.log(credits);
-      console.log(name);
       setLoading(false);
     } catch (error) {
       setLoading(false);
@@ -136,13 +79,7 @@ export const App = () => {
           width: "fit-content",
         }}
       >
-        <p>
-          {mode === "showCredits"
-            ? "Getting your credit balance"
-            : mode === "team"
-            ? "Redirecting You to Quiz.."
-            : "Searching for you session.."}
-        </p>
+        <p>{"Redirecting You to Quiz.."}</p>
         <RaceBy
           size={300}
           lineWeight={20}
@@ -158,20 +95,6 @@ export const App = () => {
       <div>
         <h1>Something Went Wrong. Please Refresh</h1>
       </div>
-    );
-  }
-
-  if (mode === "address") {
-    return (
-      <Address
-        email={email}
-        link={link}
-        setError={setError}
-        setLoading={setLoading}
-        setMode={setMode}
-        wstoken={wstoken}
-        wsfunction={wsfunction}
-      />
     );
   }
 
@@ -218,86 +141,11 @@ export const App = () => {
               id="submit-btn"
               onClick={() =>
                 window.location.assign(
-                  `https://payment.wisechamps.com?email=${email}`
+                  `https://quizbalance.wisechamps.com?email=${email}`
                 )
               }
             >
               Buy Quiz Balance
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (mode === "team") {
-    return (
-      <>
-        <Header />
-        <div className="animate__animated animate__fadeInRight">
-          <p>Please select your Team</p>
-          <div
-            style={{
-              width: "100%",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
-              gap: "10px",
-            }}
-          >
-            <button
-              id="submit-btn"
-              onClick={() => redirectToQuiz(email, "Boys", address)}
-            >
-              Boys
-            </button>
-            <button
-              id="submit-btn"
-              onClick={() => redirectToQuiz(email, "Girls", address)}
-            >
-              Girls
-            </button>
-          </div>
-        </div>
-      </>
-    );
-  }
-
-  if (mode === "showCredits") {
-    return (
-      <>
-        <Header />
-        <div
-          id="loadingDiv"
-          style={{
-            width: "fit-content",
-          }}
-          className="animate__animated animate__fadeInRight"
-        >
-          <p>
-            Hi {username}, Your have currently <b>{credits} Quiz Balance</b>.
-          </p>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "15px",
-            }}
-          >
-            {credits < 10 ? (
-              <button
-                id="submit-btn"
-                onClick={() =>
-                  window.location.assign(
-                    `https://payment.wisechamps.com?email=${email}`
-                  )
-                }
-              >
-                Buy Quiz Balance
-              </button>
-            ) : null}
-            <button id="submit-btn" onClick={() => handleClick(email)}>
-              Join Quiz Now
             </button>
           </div>
         </div>
@@ -376,9 +224,6 @@ export const App = () => {
           >
             <button id="submit-btn" onClick={() => handleClick(email)}>
               Join Quiz
-            </button>
-            <button id="submit-btn" onClick={() => handleCredits(email)}>
-              Get Your Quiz Balance
             </button>
           </div>
         </div>
