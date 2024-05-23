@@ -6,8 +6,6 @@ import { useEffect } from "react";
 import "animate.css";
 import { Header } from "./components/Header";
 export const App = () => {
-  const wstoken = process.env.REACT_APP_WS_TOKEN;
-  const wsfunction = process.env.REACT_APP_WS_FUNCTION;
   const query = new URLSearchParams(window.location.search);
   const [email, setEmail] = useState(query.get("email"));
   const [mode, setMode] = useState("");
@@ -49,11 +47,7 @@ export const App = () => {
         setCredits(credits);
         setLink(link);
         setAddress(address);
-        const url = `https://wisechamps.app/webservice/rest/server.php?wstoken=${wstoken}&wsfunction=${wsfunction}&user[email]=${email}&moodlewsrestformat=json`;
-        const res = await axios.get(url);
-        const loginLink = res.data.loginurl;
-        const finalLink = `${loginLink}&wantsurl=${link}`;
-        window.location.assign(finalLink);
+        window.location.assign(link);
       } else {
         setMode(mode);
       }
