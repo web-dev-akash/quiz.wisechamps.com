@@ -36,14 +36,8 @@ export const App = () => {
     try {
       setMode("");
       setLoading(true);
-      const config = {
-        headers: {
-          "Content-Type": "application/json",
-          "Access-Control-Allow-Origin": "*",
-        },
-      };
       const url = `https://backend.wisechamps.com/quiz`;
-      const res = await axios.post(url, { email: emailParam }, config);
+      const res = await axios.post(url, { email: emailParam });
       const mode = res.data.mode;
       const link = res.data.link;
       const credits = res.data.credits;
