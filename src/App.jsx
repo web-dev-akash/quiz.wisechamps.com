@@ -5,30 +5,57 @@ import "./App.css";
 import { useEffect } from "react";
 import "animate.css";
 import { Header } from "./components/Header";
+import {
+  Alert,
+  Box,
+  Button,
+  createTheme,
+  Divider,
+  Snackbar,
+  TextField,
+  ThemeProvider,
+  Typography,
+  useMediaQuery,
+  useTheme,
+} from "@mui/material";
+import Grid from "@mui/material/Grid2";
+import { LoginSlider } from "./components/LoginSlider";
+import logo from "./assets/Logo.png";
+import { ring2 } from "ldrs";
+import { Loading } from "./components/Loading";
+ring2.register();
+
 export const App = () => {
   const query = new URLSearchParams(window.location.search);
-  const [email, setEmail] = useState(query.get("email"));
+  const [open, setOpen] = useState(null);
+  const [loginData, setLoginData] = useState({
+    email: "",
+  });
+  const localEmail = localStorage.getItem("wise_email");
   const [mode, setMode] = useState("");
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(false);
-  const [credits, setCredits] = useState(0);
-  const [username, setUsername] = useState("");
-  const [grade, setGrade] = useState("");
-  const [link, setLink] = useState("");
-  const [address, setAddress] = useState("");
-  const emailRegex = new RegExp(
-    /^[A-Za-z0-9_!#$%&'*+\/=?`{|}~^.-]+@[A-Za-z0-9.-]+$/,
-    "gm"
-  );
-  const handleChange = (e) => {
+
+  const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+
+  const newtheme = useTheme();
+  const isMobile = useMediaQuery(newtheme.breakpoints.down("sm"));
+
+  const handleLoginDataChange = (e) => {
     e.preventDefault();
-    setEmail(e.target.value);
+    const name = e.target.name;
+    const value = e.target.value;
+    setLoginData({ ...loginData, [name]: value });
   };
 
-  const handleClick = async (emailParam) => {
+  const handleKeyDown = (e, email) => {
+    if (e.key === "Enter") {
+      handleUserLoginWithEmail(email);
+    }
+  };
+
+  const handleUserLoginWithEmail = async (emailParam) => {
     if (!emailRegex.test(emailParam)) {
-      alert("Please Enter a Valid Email");
-      window.location.reload();
+      setOpen("email");
       return;
     }
     try {
@@ -38,58 +65,37 @@ export const App = () => {
       const res = await axios.post(url, { email: emailParam });
       const mode = res.data.mode;
       const link = res.data.link;
-      const credits = res.data.credits;
-      const grade = res.data.grade;
-      const address = res.data.address;
+      if (mode !== "nouser" && !localEmail) {
+        localStorage.setItem("wise_email", emailParam);
+      }
       if (mode === "quizlink") {
         setMode(mode);
-        setGrade(grade);
-        setCredits(credits);
-        setLink(link);
-        setAddress(address);
         window.location.assign(link);
       } else {
         setMode(mode);
+        setLoading(false);
       }
-      setLoading(false);
     } catch (error) {
       setLoading(false);
-      setError(true);
+      setOpen("error");
       console.log("error is ------------", error);
     }
   };
 
   useEffect(() => {
-    if (email) {
-      handleClick(email);
+    if (localEmail) {
+      handleUserLoginWithEmail(localEmail);
     }
+    if (isMobile) {
+      document.body.style.overflow = "hidden";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
   }, []);
 
-  if (loading) {
-    return (
-      <div
-        id="loadingDiv"
-        style={{
-          width: "fit-content",
-        }}
-      >
-        <p>{"Redirecting You to Quiz.."}</p>
-        <RaceBy
-          size={300}
-          lineWeight={20}
-          speed={1.4}
-          color="rgba(129, 140, 248)"
-        />
-      </div>
-    );
-  }
-
-  if (error || mode.includes("internalservererror")) {
-    return (
-      <div>
-        <h1>Something Went Wrong. Please Refresh</h1>
-      </div>
-    );
+  if (loading && localEmail) {
+    return <Loading />;
   }
 
   if (mode === "quizlink") {
@@ -119,29 +125,27 @@ export const App = () => {
           id="loadingDiv"
           style={{
             width: "fit-content",
+            display: "flex",
+            alignItems: "center",
+            flexDirection: "column",
+            gap: "8px",
           }}
           className="animate__animated animate__fadeInRight"
         >
-          <p>You have already used your Quiz Balance</p>
-          <p>Please buy more and try again.</p>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              gap: "15px",
-            }}
+          <p>
+            You have <b>0 Sessions</b> left
+          </p>
+          <p>Please buy more to continue</p>
+
+          <button
+            style={{ marginTop: "10px" }}
+            id="submit-btn"
+            onClick={() =>
+              window.open("https://students.wisechamps.com/#buy_quiz", "_blank")
+            }
           >
-            <button
-              id="submit-btn"
-              onClick={() =>
-                window.location.assign(
-                  `https://quizbalance.wisechamps.com?email=${email}`
-                )
-              }
-            >
-              Buy Quiz Balance
-            </button>
-          </div>
+            Add Quiz Balance
+          </button>
         </div>
       </>
     );
@@ -195,33 +199,186 @@ export const App = () => {
     );
   }
 
+  const theme = createTheme({
+    palette: {
+      primary: {
+        main: "#5838fc",
+      },
+    },
+    typography: {
+      fontFamily: "Inter, system-ui, Avenir, Helvetica, Arial, sans-serif",
+      h4: {
+        fontWeight: "bold",
+      },
+      body2: {
+        fontSize: "0.9rem",
+      },
+    },
+  });
+
   return (
-    <>
-      <Header />
-      <div className="main animate__animated animate__fadeInRight">
-        <h3>Email</h3>
-        <div className="form">
-          <input
-            className="input"
-            type="email"
-            placeholder="Enter Email"
-            inputMode="email"
-            onChange={handleChange}
+    <ThemeProvider theme={theme}>
+      <Grid
+        container
+        sx={{
+          paddingTop: { xs: "45px", sm: "0" },
+          background: "white",
+          minHeight: { xs: "100vh" },
+          overflow: "hidden",
+          minWidth: "100vw",
+          textAlign: "left",
+        }}
+      >
+        <Snackbar
+          open={open === "email"}
+          autoHideDuration={3000}
+          onClose={() => setOpen(null)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setOpen(null)}
+            severity="error"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Enter a Valid Email
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={open === "error"}
+          autoHideDuration={3000}
+          onClose={() => setOpen(null)}
+          anchorOrigin={{ vertical: "top", horizontal: "center" }}
+        >
+          <Alert
+            onClose={() => setOpen(null)}
+            severity="error"
+            variant="filled"
+            sx={{ width: "100%" }}
+          >
+            Something Went Wrong
+          </Alert>
+        </Snackbar>
+        <Box
+          position={"absolute"}
+          top={"1rem"}
+          left={"1rem"}
+          width={{ xs: "120px", md: "180px" }}
+        >
+          <img
+            src={logo}
+            alt="Wisechamps"
+            width={"120px"}
+            style={{ width: "inherit" }}
           />
-          <p>* Please use the registered Email.</p>
-          <div
-            style={{
+        </Box>
+        <Grid
+          size={{ xs: 12, md: 6 }}
+          display={"flex"}
+          alignItems={{ xs: "flex-start", sm: "center" }}
+          justifyContent={"center"}
+          pt={"10px"}
+        >
+          <Box
+            sx={{
               display: "flex",
               flexDirection: "column",
-              gap: "15px",
+              padding: "1.4rem",
+              minWidth: { xs: "350px", sm: "400px" },
             }}
           >
-            <button id="submit-btn" onClick={() => handleClick(email)}>
-              Join Quiz
-            </button>
-          </div>
-        </div>
-      </div>
-    </>
+            <Typography variant="h4" mb={1}>
+              Login
+            </Typography>
+            <TextField
+              autoFocus
+              required
+              margin="normal"
+              fullWidth
+              id="email"
+              label="Email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              onChange={(e) => handleLoginDataChange(e)}
+              value={loginData.email}
+              onKeyDown={(e) => handleKeyDown(e, loginData.email)}
+            />
+
+            <Button
+              type="submit"
+              fullWidth
+              variant="contained"
+              color="primary"
+              sx={{
+                mt: 2,
+                mb: 2,
+                p: 1.2,
+                fontWeight: 600,
+              }}
+              onClick={() => handleUserLoginWithEmail(loginData.email)}
+              disabled={!loginData.email || loading}
+            >
+              {loading ? (
+                <Box
+                  display={"flex"}
+                  justifyContent={"center"}
+                  alignItems={"center"}
+                  gap={1}
+                >
+                  <l-ring-2
+                    size="20"
+                    stroke="3"
+                    stroke-length="0.40"
+                    bg-opacity="0.1"
+                    speed="0.8"
+                    color="#fff"
+                  ></l-ring-2>
+                  <Box component={"p"}>Sign In</Box>
+                </Box>
+              ) : (
+                "Sign in"
+              )}
+            </Button>
+
+            <Divider
+              textAlign="center"
+              sx={{
+                margin: "20px 0",
+                fontSize: "13px",
+                fontWeight: 700,
+                color: "#696969",
+              }}
+            >
+              New to Wisechamps
+            </Divider>
+            <Grid container>
+              <Grid size={12}>
+                <Button
+                  fullWidth
+                  variant="outlined"
+                  sx={{ fontWeight: 700, padding: 1 }}
+                  onClick={() =>
+                    window.open("https://wisechamps.com", "_blank")
+                  }
+                >
+                  Register Now
+                </Button>
+              </Grid>
+            </Grid>
+          </Box>
+        </Grid>
+        <Grid
+          size={{ xs: 12, md: 6 }}
+          sx={{
+            height: { xs: "300px", md: "100%", lg: "100%", xl: "100%" },
+            overflow: "hidden",
+            display: { xs: "none", md: "block" },
+          }}
+        >
+          <LoginSlider />
+        </Grid>
+      </Grid>
+    </ThemeProvider>
   );
 };
