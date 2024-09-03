@@ -1,5 +1,4 @@
 import { useState } from "react";
-import { RaceBy } from "@uiball/loaders";
 import axios from "axios";
 import "./App.css";
 import { useEffect } from "react";
@@ -26,7 +25,7 @@ import { Loading } from "./components/Loading";
 ring2.register();
 
 export const App = () => {
-  const query = new URLSearchParams(window.location.search);
+  const email = new URLSearchParams(window.location.search).get("email");
   const [open, setOpen] = useState(null);
   const [loginData, setLoginData] = useState({
     email: "",
@@ -86,6 +85,9 @@ export const App = () => {
     if (localEmail) {
       handleUserLoginWithEmail(localEmail);
     }
+    if (email && emailRegex.test(email)) {
+      handleUserLoginWithEmail(email);
+    }
     if (isMobile) {
       document.body.style.overflow = "hidden";
     }
@@ -96,25 +98,6 @@ export const App = () => {
 
   if (loading && localEmail) {
     return <Loading />;
-  }
-
-  if (mode === "quizlink") {
-    return (
-      <div
-        id="loadingDiv"
-        style={{
-          width: "fit-content",
-        }}
-      >
-        <p>Redirecting You to Quiz..</p>
-        <RaceBy
-          size={300}
-          lineWeight={20}
-          speed={1.4}
-          color="rgba(129, 140, 248)"
-        />
-      </div>
-    );
   }
 
   if (mode === "nocredits") {
