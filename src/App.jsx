@@ -84,8 +84,7 @@ export const App = () => {
   useEffect(() => {
     if (localEmail) {
       handleUserLoginWithEmail(localEmail);
-    }
-    if (email && emailRegex.test(email)) {
+    } else if (email && emailRegex.test(email)) {
       handleUserLoginWithEmail(email);
     }
     if (isMobile) {
