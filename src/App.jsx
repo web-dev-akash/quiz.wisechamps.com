@@ -158,7 +158,13 @@ export const App = () => {
             Please use a registered Email Address
           </p>
           <div>
-            <button id="submit-btn" onClick={() => setMode("")}>
+            <button
+              id="submit-btn"
+              onClick={() => {
+                localStorage.removeItem("wise_email");
+                setMode("");
+              }}
+            >
               Try Again
             </button>
             <button
@@ -171,6 +177,7 @@ export const App = () => {
                   "_blank"
                 );
                 setMode("");
+                localStorage.removeItem("wise_email");
               }}
             >
               Get Your Registered Email
